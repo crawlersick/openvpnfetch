@@ -39,8 +39,8 @@ import java.io.File;
                            // try {
                            //     Thread.sleep(1000 + random.nextInt(2000));
                            // } catch (InterruptedException ignore) {}
-                            appsock= new AppspotSocket("vpngatefetch");
-                             Thread tempthd=new Thread(new AppspotsockThread(appsock));
+                            
+                             Thread tempthd=new Thread(new AppspotsockThread());
                               tempthd.start();
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -56,10 +56,11 @@ import java.io.File;
 class AppspotsockThread implements Runnable
 {
 AppspotSocket appsock;
-    public AppspotsockThread(AppspotSocket appsock){this.appsock=appsock;}
+   // public AppspotsockThread(AppspotSocket appsock){this.appsock=appsock;}
     @Override
     public void run() {  
                 try {
+            appsock= new AppspotSocket("vpngatefetch");
             String restr=null;           
             restr=appsock.URLConmunicate("urlfopenvpn?qtype=http://www.vpngate.net/api/iphone/");           
             int delaynum=120;

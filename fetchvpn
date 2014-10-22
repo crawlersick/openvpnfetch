@@ -1,0 +1,4 @@
+cp ~/NetBeansProjects/OpenvpnFetch/dist/OpenvpnFetch.jar ~/VPN/OpenvpnFetch.jar
+cd ~/VPN/
+mv *.ovpn bk
+java -jar ~/VPN/OpenvpnFetch.jar /home/sadpanda/./VPN/

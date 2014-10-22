@@ -56,6 +56,7 @@ public class AppspotSocket {
     private byte b[]=new byte[1024];
     ByteBuffer bbuf = ByteBuffer.allocate(2000000);
     private int progress=0;
+            String effelist[];
     
     public int getProgress(){return progress;}
     
@@ -79,9 +80,7 @@ public class AppspotSocket {
     }  
 
     logger.info("--------------------");  
-        
-        
-        
+
     this.appid=appid;
     this.webhost=appid+".appspot.com";
     this.hostport=443;
@@ -114,12 +113,10 @@ public class AppspotSocket {
      */
 
         int effecnt=0;
-        //String effelist[]=new String[1024];
-        String effelist[];
+
         HashSet<String> EffLst=new HashSet<String>();
         String dnsserverips[]={"58.150.55.34","60.32.112.42","208.67.222.222","114.114.114.114"};
         int ipsidx=0;
-        //while(effecnt==0){
         while(ipsidx<dnsserverips.length){
             for(int i=0;i<googlelist.length;i++)
             {
@@ -127,9 +124,7 @@ public class AppspotSocket {
 
                     String tempresult=dq.Getip(dnsserverips[(ipsidx % (dnsserverips.length))], googlelist[i]);
                     String tempresultlist[] =tempresult.split("\\|");
-                    //effelist[effecnt]=tempresultlist[tempresultlist.length-1];
                     for(int j=0;j<tempresultlist.length;j++) {
-          //              effelist[effecnt] = tempresultlist[j];
                         effecnt++;
                         EffLst.add(tempresultlist[j]);
                     }
@@ -143,14 +138,6 @@ public class AppspotSocket {
 
         progress=10;
 
-
-
-/*
-        for(int i=0;i<effecnt;i++)
-        {
-            logger.info(effelist[i]);
-        }
-*/
         effelist=new String[EffLst.size()];
         int effelistcnt=0;
         for(String s:EffLst)
@@ -159,72 +146,8 @@ public class AppspotSocket {
             effelist[effelistcnt]=s;
             effelistcnt++;
         }
-    /*
-    String tempresult=dq.Getip("114.114.114.114", "www.google.com.cat");
-    ipadrs= tempresult.split("\\|");
-    if (ipadrs==null )
-    {
-        Errormsg= "Error: not DNS IP found!";
-    }
-    
-          */
-    
-    
- 
-//System.out.println(effelist[3]);
-//System.out.println(webhost);
-   //sock = (SSLSocket) sslsocketfactory.createSocket();
-   // sock = (SSLSocket) sslsocketfactory.createSocket(ipadrs[0],hostport);
-  SocketAddress socketAddress ;//= new InetSocketAddress(effelist[3],hostport);
-  int rip=0;
-  boolean loopflag = true;
-  int loopcnt=0;
-        while(loopflag){
-
-            try{
-                if(rip==effelist.length)
-                {
-                    rip=0;
-                }
-                //rip=(int) (Math.random()*effecnt);
-                socketAddress = new InetSocketAddress(effelist[rip],hostport);
-                sock = (SSLSocket) sslsocketfactory.createSocket();
-                sock.connect(socketAddress,5000);
 
 
-
-
-                sock.setSoTimeout(20000);
-                //System.out.println("2222");
-
-                ost=sock.getOutputStream();
-                ist=sock.getInputStream();
-
-                progress=30;
-                loopflag=false;
-
-            }catch (SocketTimeoutException se){
-                rip++;
-                loopcnt++;
-                logger.info(effelist[rip-1]+"  " + rip+" Time out Retry connect : "+ loopcnt);
-
-            }
-            catch(ConnectException ce){
-                            rip++;
-                loopcnt++;
-                logger.info(effelist[rip-1]+"  " + rip+" connect refused: "+ loopcnt);
-            }
-            
-            
-        }
-  logger.info("connected!!"+rip +" :: "+effelist[rip]);
- //System.out.println("connected!!"+rip +" :: "+effelist[rip]);
- 
- progress=30;
-    sock.setSoTimeout(10000);
- //System.out.println("2222");
-    ost=sock.getOutputStream();
-    ist=sock.getInputStream();
     
     setheader();
     
@@ -253,7 +176,35 @@ public class AppspotSocket {
     else
     {setheader(URLparameter);}
     
-    ost.write(headerstr.getBytes());
+    
+      SocketAddress socketAddress ;
+  int rip=0;
+  boolean loopflag = true;
+  int loopcnt=0;
+        while(loopflag){
+
+            try{
+                if(rip==effelist.length)
+                {
+                    rip=0;
+                }
+                socketAddress = new InetSocketAddress(effelist[rip],hostport);
+                sock = (SSLSocket) sslsocketfactory.createSocket();
+                sock.connect(socketAddress,5000);
+
+                sock.setSoTimeout(20000);
+
+                ost=sock.getOutputStream();
+                ist=sock.getInputStream();
+
+                progress=30;
+                
+                  logger.info("connected!!"+rip +" :: "+effelist[rip]);
+                  progress=30;
+                  sock.setSoTimeout(10000);
+                  ost=sock.getOutputStream();
+                  ist=sock.getInputStream();
+                    ost.write(headerstr.getBytes());
     ost.flush();
     int n = 1;
     
@@ -278,15 +229,9 @@ public class AppspotSocket {
             {
                 header[headrcnt]=x;
                 headrcnt++;
-
                 if (x_preprepre == 0X0D&&x_prepre == 0X0A&&x_pre == 0X0D&&x == 0X0A) {
                     System.out.println("date header end found! ");
-
                     dataloopflag=true;
-
-                    //x = (byte) ist.read();
-                    //Log.i("next byte! ","!!!!!"+x);
-
                     String Stringheader=new String(header,0,headrcnt);
                     System.out.println("header string! "+Stringheader);
                     logger.info(Stringheader);
@@ -294,8 +239,6 @@ public class AppspotSocket {
                     String strslist2[]=strslist[1].split("\r\n");
                     datasize=Integer.parseInt(strslist2[0].trim());
                     System.out.println("get the number! "+": "+datasize);
-
-
                 }
                 x_preprepre=x_prepre;
                 x_prepre = x_pre;
@@ -305,38 +248,33 @@ public class AppspotSocket {
 
             datacounter++;
         
-/*    
-    if(firstflag)
-    {
-        if(n==-1)
-        {
-            n = ist.read(b);
-            firstflag=false;
-        }
-    }
- */   
-//
-//    ist.wait(100);
-//    bbuf.put(b);
-    //break;
-    
-    //System.out.print(new String(b));
-   // System.out.println("read bytes: "+bbuf.position());
     bbuf.put(x);
-   
-    
     }
-  //  System.out.println("read bytes: "+bbuf.position());
-    
-    progress=70;
-    
+    progress=70;  
     bbuf.flip();
     byte bb[]=new byte[bbuf.limit()];
-    //bbuf.position(0);
     bbuf.get(bb,0,bb.length);
     return decompress(bb);
-    //return new String(bb);
-    //return "END";
+                
+            //    loopflag=false;
+
+            }catch (SocketTimeoutException se){
+                rip++;
+                loopcnt++;
+                logger.info(effelist[rip-1]+"  " + rip+" Time out Retry connect : "+ loopcnt);
+
+            }
+            catch(ConnectException ce){
+                            rip++;
+                loopcnt++;
+                logger.info(effelist[rip-1]+"  " + rip+" connect refused: "+ loopcnt);
+            }
+            
+            
+        }
+
+    
+return null;
     }
     
     public void closeappsocket() throws IOException{
